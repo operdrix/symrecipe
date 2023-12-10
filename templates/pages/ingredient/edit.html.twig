@@ -1,13 +1,12 @@
 {% extends "base.html.twig" %}
 
-{% block title %}SymRecipe - Nouvel Ingrédient
+{% block title %}SymRecipe - Modifier un Ingrédient
 {% endblock %}
 
 {% block body %}
 <div class="container">
 
-  <h1 class="mt-4">Création d'un ingrédient</h1>
-	<a href="{{ path('ingredient.index') }}" class="btn btn-primary">Retour aux ingrédients</a>
+  <h1 class="mt-4">Modification de l'ingrédient</h1>
 
   {{ form_start(form) }}
     <div class="form-error">

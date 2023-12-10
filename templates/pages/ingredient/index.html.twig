@@ -17,6 +17,12 @@
 		<strong>{{ message }}</strong>
 	</div>
 	{% endfor %}
+		{% for message in app.flashes('error') %}
+	<div class="alert alert-dismissible alert-danger">
+		<button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+		<strong>{{ message }}</strong>
+	</div>
+	{% endfor %}
 
 	<div class="count mt-4">
 		Il y a
@@ -31,6 +37,7 @@
 				<th scope="col">Nom</th>
 				<th scope="col">Prix</th>
 				<th scope="col">Date de création</th>
+				<th scope="col">Actions</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -40,6 +47,9 @@
 				<td>{{ ingredient.name }}</td>
 				<td>{{ ingredient.price }}</td>
 				<td>{{ ingredient.createdAt | date("d/m/Y")}}</td>
+				<td>
+					<a href="{{ path('ingredient.edit', {id: ingredient.id}) }}" class="btn btn-info fa-regular fa-pen-to-square"></a>
+					<a href="{{ path('ingredient.delete', {id: ingredient.id}) }}" class="btn btn-danger fa-solid fa-trash"></a>
 			</tr>
 			{% endfor %}
 		</tbody>
