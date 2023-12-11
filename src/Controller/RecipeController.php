@@ -47,7 +47,9 @@ class RecipeController extends AbstractController
     public function new(Request $request, EntityManagerInterface $manager): Response
     {
         $recipe = new Recipe();
-        $form = $this->createForm(RecipeType::class, $recipe);
+        $form = $this->createForm(RecipeType::class, $recipe, [
+            'action' => $this->generateUrl('recipe.new')
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -77,7 +79,9 @@ class RecipeController extends AbstractController
     #[Route('/recette/edition/{id}', name: 'recipe.edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, EntityManagerInterface $manager, Recipe $recipe): Response
     {
-        $form = $this->createForm(RecipeType::class, $recipe);
+        $form = $this->createForm(RecipeType::class, $recipe, [
+            'action' => $this->generateUrl('recipe.edit', ['id' => $recipe->getId()])
+        ]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

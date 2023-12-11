@@ -20,6 +20,10 @@ class RecipeType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $submitLabel = 'Ajouter ma recette';
+        if (strpos($options['action'], 'edition') !== false) {
+            $submitLabel = 'Enregistrer les modifications';
+        }
         $builder
             ->add('name', TextType::class, [
                 'attr' => [
@@ -140,7 +144,7 @@ class RecipeType extends AbstractType
                 'attr' => [
                     'class' => 'btn btn-primary mt-4'
                 ],
-                'label' => 'Sauvegarder',
+                'label' => $submitLabel,
             ]);
     }
 
@@ -148,6 +152,7 @@ class RecipeType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Recipe::class,
+            'action' => null,
         ]);
     }
 }

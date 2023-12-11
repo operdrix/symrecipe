@@ -15,6 +15,10 @@ class IngredientType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
+        $submitLabel = 'Ajouter mon ingrédient';
+        if (strpos($options['action'], 'edition') !== false) {
+            $submitLabel = 'Enregistrer les modifications';
+        }
         $builder
             ->add('name', TextType::class, [
                 'attr' => [
@@ -48,7 +52,7 @@ class IngredientType extends AbstractType
                 'attr' => [
                     'class' => 'btn btn-primary mt-4'
                 ],
-                'label' => 'Sauvegarder',
+                'label' => $submitLabel,
             ]);
     }
 
