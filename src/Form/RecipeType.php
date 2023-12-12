@@ -3,7 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Recipe;
+use App\Repository\IngredientRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
@@ -14,10 +16,19 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class RecipeType extends AbstractType
 {
+
+    private $token;
+
+    public function __construct(TokenStorageInterface $token)
+    {
+        $this->token = $token;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $submitLabel = 'Ajouter ma recette';
@@ -116,24 +127,33 @@ class RecipeType extends AbstractType
             ])
             ->add('isFavorite', CheckboxType::class, [
                 'attr' => [
-                    'class' => 'form-check-input'
+                    'class' => 'form-check-input mt-4'
                 ],
                 'label' => 'Recette favorite ?',
                 'label_attr' => [
-                    'class' => 'form-check-label',
+                    'class' => 'form-check-label mt-4',
                 ],
                 'required' => false,
             ])
             ->add('ingredients', EntityType::class, [
-                'attr' => [
-                    'class' => 'form-control'
-                ],
+                'class' => 'App\Entity\Ingredient',
+                'query_builder' => function (IngredientRepository $r) {
+                    return $r->createQueryBuilder('i')
+                        ->where('i.user = :user')
+                        ->orderBy('i.name', 'ASC')
+                        ->setParameter('user', $this->token->getToken()->getUser());
+                },
                 'label' => 'Les ingrédients',
                 'label_attr' => [
                     'class' => 'form-label mt-4',
                 ],
-                'class' => 'App\Entity\Ingredient',
+                'attr' => [
+                    'class' => 'form-control d-flex flex-wrap'
+                ],
                 'choice_label' => 'name',
+                'choice_attr' => function ($choice, $key, $value) {
+                    return ['class' => 'form-check-input mx-2'];
+                },
                 'multiple' => true,
                 'expanded' => true,
                 'constraints' => [
