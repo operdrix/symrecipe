@@ -19,10 +19,10 @@ class UserListener
     $this->encorePassword($user);
   }
 
-  // public function preUpdate(User $user): void
-  // {
-  //   $this->encorePassword($user);
-  // }
+  public function preUpdate(User $user): void
+  {
+    $this->encorePassword($user);
+  }
 
   /**
    * Hash the password if it is not null
