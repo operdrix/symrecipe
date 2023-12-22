@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
+#[Route('/users', name: 'user.')]
 class UserController extends AbstractController
 {
     /**
@@ -23,7 +24,7 @@ class UserController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/utilisateur/edition/{id}', name: 'user.edit')]
+    #[Route('/{id}/edit', name: 'edit')]
     public function index(
         User $user,
         Request $request,
@@ -70,7 +71,7 @@ class UserController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/utilisateur/mot-de-passe/{id}', name: 'user.edit.password', methods: ['GET', 'POST'])]
+    #[Route('/{id}/password-edit', name: 'edit.password', methods: ['GET', 'POST'])]
     public function editPassword(
         User $user,
         Request $request,
