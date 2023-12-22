@@ -11,8 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/users', name: 'user.')]
+#[IsGranted('ROLE_USER')]
 class UserController extends AbstractController
 {
     /**
@@ -31,10 +33,8 @@ class UserController extends AbstractController
         EntityManagerInterface $manager,
         UserPasswordHasherInterface $hasher
     ): Response {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('security.login');
-        }
 
+        // Si l'utilisateur n'est pas la personne connectée, on le redirige vers la page d'accueil
         if ($this->getUser() !== $user) {
             return $this->redirectToRoute('recipe.index');
         }
@@ -78,10 +78,8 @@ class UserController extends AbstractController
         EntityManagerInterface $manager,
         UserPasswordHasherInterface $hasher
     ): Response {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('security.login');
-        }
 
+        // Si l'utilisateur n'est pas la personne connectée, on le redirige vers la page d'accueil
         if ($this->getUser() !== $user) {
             return $this->redirectToRoute('recipe.index');
         }

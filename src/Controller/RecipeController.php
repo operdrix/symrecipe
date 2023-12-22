@@ -11,8 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/recipies', name: 'recipe.')]
+#[IsGranted('ROLE_USER')]
 class RecipeController extends AbstractController
 {
     /**
@@ -26,6 +28,7 @@ class RecipeController extends AbstractController
     #[Route('/', name: 'index', methods: ['GET'])]
     public function index(RecipeRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
+
         $recipes = $paginator->paginate(
             $repository->findBy(['user' => $this->getUser()]),
             $request->query->getInt('page', 1),
@@ -81,6 +84,11 @@ class RecipeController extends AbstractController
     #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, EntityManagerInterface $manager, Recipe $recipe): Response
     {
+        // n'autorise l'accès à la modification que si l'utilisateur est bien le propriétaire de la recette
+        if ($this->getUser() !== $recipe->getUser()) {
+            return $this->redirectToRoute('recipe.index');
+        }
+
         $form = $this->createForm(RecipeType::class, $recipe, [
             'action' => $this->generateUrl('recipe.edit', ['id' => $recipe->getId()])
         ]);
@@ -112,6 +120,10 @@ class RecipeController extends AbstractController
     #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
     public function delete(Recipe $recipe, EntityManagerInterface $manager): Response
     {
+        // n'autorise l'accès à la suppression que si l'utilisateur est bien le propriétaire de la recette
+        if ($this->getUser() !== $recipe->getUser()) {
+            return $this->redirectToRoute('recipe.index');
+        }
 
         $manager->remove($recipe);
         $manager->flush();
