@@ -41,6 +41,24 @@ class RecipeController extends AbstractController
     }
 
     /**
+     * Cette route permet d'afficher une recette
+     * 
+     * @param Recipe $recipe
+     * @return Response
+     */
+    #[Route('/{id}', name: 'show', methods: ['GET'])]
+    public function show(Recipe $recipe): Response
+    {
+        // n'autorise l'accès à la recette que si l'utilisateur est bien le propriétaire de la recette ou si la recette est publique
+        if ($this->getUser() !== $recipe->getUser() && !$recipe->isPublic()) {
+            return $this->redirectToRoute('recipe.index');
+        }
+        return $this->render('pages/recipe/show.html.twig', [
+            'recipe' => $recipe,
+        ]);
+    }
+
+    /**
      * Cette route permet d'afficher le formulaire de création d'une recette et de le traiter
      * 
      * @param Request $request
