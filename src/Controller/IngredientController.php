@@ -14,7 +14,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/ingredients', name: 'ingredient.')]
-#[IsGranted('ROLE_USER')]
+#[IsGranted('ROLE_USER', message: 'Vous devez être connecté pour accéder à cette page.')]
 class IngredientController extends AbstractController
 {
     /**

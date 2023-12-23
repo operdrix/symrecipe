@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
-#[UniqueEntity(fields: ['name'], message: 'Ce nom de recette est déjà utilisé.')]
+#[UniqueEntity(fields: ['name', 'user'], message: 'Ce nom de recette est déjà utilisé.')]
 #[ORM\HasLifecycleCallbacks]
 class Recipe
 {
