@@ -11,18 +11,22 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 
+#[Route('/', name: 'security.')]
 class SecurityController extends AbstractController
 {
     /**
      * Cette route permet de se connecter
      * 
-     * @Route("/connexion", name="security.login")
+     * @Route("/login", name="security.login")
      * @param AuthenticationUtils $auth
      * @return Response
      */
-    #[Route('/connexion', name: 'security.login', methods: ['GET', 'POST'])]
+    #[Route('/login', name: 'login', methods: ['GET', 'POST'])]
     public function login(AuthenticationUtils $auth): Response
     {
+        if ($this->getUser()) {
+            return $this->redirectToRoute('recipe.index');
+        }
         return $this->render('pages/security/login.html.twig', [
             'last_username' => $auth->getLastUsername(),
             'error' => $auth->getLastAuthenticationError(),
@@ -32,10 +36,10 @@ class SecurityController extends AbstractController
     /**
      * Cette route permet de se déconnecter
      * 
-     * @Route("/deconnexion", name="security.logout")
+     * @Route("/logout", name="security.logout")
      * @return void
      */
-    #[Route('/deconnexion', name: 'security.logout', methods: ['GET'])]
+    #[Route('/logout', name: 'logout', methods: ['GET'])]
     public function logout()
     {
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
@@ -44,12 +48,12 @@ class SecurityController extends AbstractController
     /**
      * Cette route permet de créer un compte utilisateur
      * 
-     * @Route("/inscription", name="security.registration")
+     * @Route("/signin", name="security.registration")
      * @param Request $request
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/inscription', name: 'security.registration', methods: ['GET', 'POST'])]
+    #[Route('/signin', name: 'registration', methods: ['GET', 'POST'])]
     public function registration(Request $request, EntityManagerInterface $manager): Response
     {
         $user = new User();

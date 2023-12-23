@@ -11,7 +11,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/ingredients', name: 'ingredient.')]
+#[IsGranted('ROLE_USER', message: 'Vous devez être connecté pour accéder à cette page.')]
 class IngredientController extends AbstractController
 {
     /**
@@ -22,7 +25,7 @@ class IngredientController extends AbstractController
      * @param Request $request
      * @return Response
      */
-    #[Route('/ingredient', name: 'ingredient.index', methods: ['GET'])]
+    #[Route('/', name: 'index', methods: ['GET'])]
     public function index(IngredientRepository $repository, PaginatorInterface $paginator, Request $request): Response
     {
         $ingredients = $paginator->paginate(
@@ -43,7 +46,7 @@ class IngredientController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/ingredient/nouveau', name: 'ingredient.new', methods: ['GET', 'POST'])]
+    #[Route('/new', name: 'new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $manager): Response
     {
         $ingredient = new Ingredient();
@@ -77,9 +80,14 @@ class IngredientController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/ingredient/edition/{id}', name: 'ingredient.edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/edit', name: 'edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, EntityManagerInterface $manager, Ingredient $ingredient): Response
     {
+        // N'autorise l'accès à cette page que si l'utilisateur est le propriétaire de l'ingrédient
+        if ($this->getUser() !== $ingredient->getUser()) {
+            return $this->redirectToRoute('ingredient.index');
+        }
+
         $form = $this->createForm(IngredientType::class, $ingredient, [
             'action' => $this->generateUrl('ingredient.edit', ['id' => $ingredient->getId()])
         ]);
@@ -108,9 +116,13 @@ class IngredientController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/ingredient/suppression/{id}', name: 'ingredient.delete', methods: ['GET'])]
+    #[Route('/{id}/delete', name: 'delete', methods: ['GET'])]
     public function delete(Ingredient $ingredient, EntityManagerInterface $manager): Response
     {
+        // N'autorise l'accès à cette page que si l'utilisateur est le propriétaire de l'ingrédient
+        if ($this->getUser() !== $ingredient->getUser()) {
+            return $this->redirectToRoute('ingredient.index');
+        }
 
         $manager->remove($ingredient);
         $manager->flush();

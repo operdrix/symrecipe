@@ -11,7 +11,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[Route('/users', name: 'user.')]
+#[IsGranted('ROLE_USER')]
 class UserController extends AbstractController
 {
     /**
@@ -23,17 +26,15 @@ class UserController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/utilisateur/edition/{id}', name: 'user.edit')]
+    #[Route('/{id}/edit', name: 'edit')]
     public function index(
         User $user,
         Request $request,
         EntityManagerInterface $manager,
         UserPasswordHasherInterface $hasher
     ): Response {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('security.login');
-        }
 
+        // Si l'utilisateur n'est pas la personne connectée, on le redirige vers la page d'accueil
         if ($this->getUser() !== $user) {
             return $this->redirectToRoute('recipe.index');
         }
@@ -70,17 +71,15 @@ class UserController extends AbstractController
      * @param EntityManagerInterface $manager
      * @return Response
      */
-    #[Route('/utilisateur/mot-de-passe/{id}', name: 'user.edit.password', methods: ['GET', 'POST'])]
+    #[Route('/{id}/password-edit', name: 'edit.password', methods: ['GET', 'POST'])]
     public function editPassword(
         User $user,
         Request $request,
         EntityManagerInterface $manager,
         UserPasswordHasherInterface $hasher
     ): Response {
-        if (!$this->getUser()) {
-            return $this->redirectToRoute('security.login');
-        }
 
+        // Si l'utilisateur n'est pas la personne connectée, on le redirige vers la page d'accueil
         if ($this->getUser() !== $user) {
             return $this->redirectToRoute('recipe.index');
         }
